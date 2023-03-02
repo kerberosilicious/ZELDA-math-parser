@@ -1,26 +1,23 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { motion } from "framer-motion";
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [name, setName] = useState("Link");
 
   return (
     <div className="App">
-      <div>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+      <motion.div
+        className="NamePrompt"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 1 }}
+      >
+        <h1>What's your name?</h1>
+        <input value={name} onChange={(e) => setName(e.target.value)} />
+      </motion.div>
+
     </div>
   )
 }
