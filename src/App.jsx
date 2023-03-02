@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import './App.css'
 
 function App() {
-  const [name, setName] = useState("Link");
+  const [name, setName] = useState("Ghegi");
 
   return (
     <div className="App">
