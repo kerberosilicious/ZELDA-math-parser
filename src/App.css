@@ -1,5 +1,5 @@
 #root {
-  width: 1024px;
+  max-width: 1024px;
   height: 600px;
   overflow: auto;
   margin: 0 auto; /* centers the container horizontally */
@@ -7,19 +7,99 @@
 }
 
 .App {
+
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #292A41;
+  background-color: #000;
   display: flex;
   flex-direction: row;
   
   width: 1024px;
   height: 600px;
-  overflow: auto;
+  overflow: hidden;
   margin: 0 auto; /* centers the container horizontally */
 
 }
+
+
+.ZeldaContainer {
+
+  flex: 5;
+
+  overflow: hidden;
+
+  z-index: 2;
+  background-color: #000;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  /* border-top-right-radius: 5rem;
+  border-bottom-left-radius: 5rem; */
+}
+
+.Zelda {
+  overflow: hidden;
+  text-align: center; /* horizontally center the image */
+  display: flex; /* vertically center the image */
+  justify-content: center; /* vertically center the image */
+  align-items: center; /* vertically center the image */
+  width: 35rem;
+  height: 35rem;
+  border:#fff 1px solid;
+}
+
+.ZeldaImage {
+  width: 40rem;
+  height: 40rem;
+}
+
+.DialogContainer {
+  height: 100%;
+  width: 25rem;
+  border:#fff 1px solid;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.Dialogs {
+  flex:8;
+  overflow: hidden;
+  
+  border:#fff 1px solid;
+}
+
+.RecordButtonContainer {
+  flex: 2;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  border:#fff 1px solid;
+}
+
+.Transcript {
+  height: 100%;
+  border:#fff 1px solid;
+}
+
+.RecordButton {
+  margin-inline: 1.5rem;
+  color: white;
+  border-radius: 50%;
+  font-size: 2rem;
+  padding: 1.5rem;
+  border: none;
+  outline: none;
+  height: 5rem;
+  width: 5rem;
+}
+
 
 /* put nameprompt at the center of screen */
 .NamePrompt {
@@ -28,21 +108,8 @@
   padding: 1rem;
   border-radius: 1rem;
   margin: 0 auto;
-  
 }
 
-.ZeldaContainer {
-  z-index: 2;
-  background-color: #000;
-  flex: 1;
-
-  display: flex;
-  justify-content: center;
-}
-
-.Zelda {
-
-}
 
 .MicrophoneContainer {
   display: none;
@@ -52,3 +119,4 @@
   left: 0;
   background-color: #000;
 }
+
