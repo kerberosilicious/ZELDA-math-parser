@@ -9,9 +9,13 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 100vh;
-  width: 100vw;
-  background-color: #141432;
+  background-color: #292A41;
+  display: flex;
+  flex-direction: row;
+  
+  width: 600;
+  height: 1024; /* 16:9 aspect ratio */
+
 }
 
 /* put nameprompt at the center of screen */
@@ -22,4 +26,26 @@
   border-radius: 1rem;
   margin: 0 auto;
   
+}
+
+.ZeldaContainer {
+  z-index: 2;
+  background-color: #000;
+  flex: 1;
+
+  display: flex;
+  justify-content: center;
+}
+
+.Zelda {
+
+}
+
+.MicrophoneContainer {
+  display: none;
+  z-index: 3;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #000;
 }
