@@ -155,7 +155,7 @@ function App() {
     // record the user's speech
     setIsInitialized(true);
     setZeldaState(3);
-    SpeechRecognition.startListening();
+    SpeechRecognition.startListening({ continuous: true });
     console.log("listening...");
   }
 
