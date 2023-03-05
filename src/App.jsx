@@ -4,7 +4,11 @@ import './App.css';
 
 import 'regenerator-runtime';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
 import Polly from './tools/Polly';
+const appId = '0c2b5012-c2d6-42e6-b97d-70474bfa2ed0';
+const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
+SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
 
 // ? ICON IMPORTS * //
 import { FaMicrophone, FaStop, FaCalculator, FaComment } from 'react-icons/fa';
@@ -52,9 +56,6 @@ function App() {
     browserSupportsSpeechRecognition
   } = useSpeechRecognition();
 
-  if (!browserSupportsSpeechRecognition) {
-    return <span>Browser doesn't support speech recognition.</span>;
-  }
 
   // * First time Launch * //
 
@@ -155,7 +156,7 @@ function App() {
     // record the user's speech
     setIsInitialized(true);
     setZeldaState(3);
-    SpeechRecognition.startListening({ continuous: true });
+    SpeechRecognition.startListening();
     console.log("listening...");
   }
 
@@ -172,6 +173,7 @@ function App() {
       addToConversation("User", message);
       setGeneratingResponse(true);
       getZeldaResponse(message);
+      resetTranscript();
     }
   }
 
