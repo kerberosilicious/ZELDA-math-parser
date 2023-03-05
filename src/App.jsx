@@ -42,9 +42,8 @@ function App() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [zeldaState, setZeldaState] = useState(0);
   const [generatingResponse, setGeneratingResponse] = useState(false);
-  const [answer, setAnswer] = useState(null);
-  const [answerTitle, setAnswerTitle] = useState(null);
-  const [solutionText, setSolutionText] = useState(null);
+  const [currentAnswer, setCurrentAnswer] = useState({"title": null, "problem": null, "solution": null, "latex": null});
+  const [answerDatabase, setAnswerDatabase] = useState([]);
   //PROMPT VARIABLES
   const [promptMemory, setPromptMemory] = useState(``);
   const [currentResponse, setCurrentResponse] = useState('');
@@ -97,26 +96,30 @@ function App() {
         try {
           const response = JSON.parse(data.data.choices[0].text);
 
-          console.log(response);
+          console.log(data.data.choices[0].text);
   
           setCurrentResponse(response.response);
-          zeldaTalk(response.response);
           addToConversation("Zelda", response.response);
           setGeneratingResponse(false);
   
           setPromptMemory(promptMemory + "\nHuman: " + prompt + "\nZelda:" + JSON.stringify(response));
-        
-          if(response.latex !== undefined) {
-            setAnswer(response.latex);
+          
+
+          if(response.latex !== undefined || response.title !== undefined || response.solution !== undefined) {
+            zeldaTalk(response.response + ". " + response.solution);
+            setCurrentAnswer(
+              {
+                "title": response.title, 
+                "problem": prompt, 
+                "solution": response.solution, 
+                "latex": response.latex
+              }
+            );
+          } else
+          {
+            zeldaTalk(response.response);
           }
 
-          if(response.title !== undefined) {
-            setAnswerTitle(response.title);
-          }
-        
-          if(response.solution !== undefined) {
-            setSolutionText(response.solution);
-          }
 
         } catch (error) {
             console.log(error);
@@ -128,6 +131,42 @@ function App() {
       });
     
     }
+
+  const fixPunctuation = async(text) => {
+    try {
+      const completion = await openai.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {role: "system", content: `You are a punctuation and grammar fixer. You will receive a transcription from a user and your goal is to fix that input into a better readable format (math based). Only respond with a JSON object. If you have any comments, add a key to the object and respond there. //{"output":"<<text>>", "comment":"<<comment>>"} If the user is being offensive. Censor the offensive words with [CENSORED] instead. If you don't understand the transcription. Just fix it anyways. You do not need to respond. Do not add anything to the transcription. `},
+          {role: "user", content: `hello zelda`},
+          {role: "assistant", content: `{"output":"Hello, Zelda!"}`},
+          {role: "user", content: `how are you`},
+          {role: "assistant", content: `{"output":"How are you?"}`},
+          {role: "user", content: `who made you`},
+          {role: "assistant", content: `{"output":"Who made you?"}`},
+          {role: "user", content: `who created you`},
+          {role: "assistant", content: `{"output":"Who created you?"}`},
+          {role: "user", content: `can you convert all the previous dialog`},
+          {role: "assistant", content: `{"output":"Can you convert all the previous dialogs?"}`},
+          {role: "user", content: `whats one plus one to the fifth power`},
+          {role: "assistant", content: `{"output":"What's (1 + 1)^5?"}`},
+          {role: "user", content: `one plus one`},
+          {role: "assistant", content: `{"output":"1 + 1"`},
+          {role: "user", content: `argue he returned`},
+          {role: "assistant", content: `{"output":"Argue. He returned.", "comment":"I'm sorry, I don't understand what you mean by that"}`},
+          {role: "user", content: `in the accomodating`},
+          {role: "assistant", content: `{"output":"In the accomodating.", "comment":"I'm sorry, I don't understand what you mean by that"}`},
+          {role: "user", content: text},
+        ],
+      });
+      const response = JSON.parse(completion.data.choices[0].message.content);
+      return response.output;
+    } catch (error)
+    {
+      console.log(error);
+      return text;
+    }
+  }
 
   const zeldaTalk = (zeldaText) => {
     // add Zelda to conversation
@@ -169,17 +208,27 @@ function App() {
       let message = transcript;
       if(transcript === "") {
         message = "...";
+        addToConversation("User", message);
+        setGeneratingResponse(true);
+        getZeldaResponse(message);
+        resetTranscript();
+      } else
+      {
+        const fixedMessage = await fixPunctuation(message);
+        addToConversation("User", fixedMessage);
+        setGeneratingResponse(true);
+        getZeldaResponse(fixedMessage);
+        resetTranscript();
       }
-      addToConversation("User", message);
-      setGeneratingResponse(true);
-      getZeldaResponse(message);
-      resetTranscript();
+
     }
   }
 
   const saveAnswer = () => {
     // save the answer to the database
-    setAnswer(null);
+    setAnswerDatabase(prevAnswerDatabase => [...prevAnswerDatabase, currentAnswer]);
+    setCurrentAnswer({"title": null, "problem": null, "solution": null, "latex": null});
+    console.log(answerDatabase);
   }
 
   const respond = () => {
@@ -228,8 +277,8 @@ function App() {
         className="ZeldaContainer"
         animate={
           {
-            x: answer !== null ? -50 : 0,
-            scale: answer !== null ? 0.8 : 1,
+            x: currentAnswer.title !== null ? -50 : 0,
+            scale: currentAnswer.title ? 0.8 : 1,
           }
         }
         >
@@ -258,7 +307,7 @@ function App() {
       <motion.div className = "DialogContainer"
         animate = {
           {
-            x: answer === null ? 0 : 700,
+            x: currentAnswer.title === null ? 0 : 700,
           }
         }>
 
@@ -366,7 +415,7 @@ function App() {
       <motion.div className="SolutionContainer"
         animate = {
           {
-            x: answer === null ? 700 : 0,
+            x: currentAnswer.title === null ? 700 : 0,
             scale: 0.95,
           }
         }>
@@ -375,13 +424,13 @@ function App() {
             className="SolutionHeader"
             animate={
               {
-                x: answer === null ? 50 : 0,
-                opacity: answer === null ? 0 : 1,
+                x: currentAnswer.title === null ? 50 : 0,
+                opacity: currentAnswer.title === null ? 0 : 1,
               }
             }
             transition={{ delay: 0.5, duration: 0.5 }}
             >
-            <FaCalculator color='#00eeff'/>{answerTitle === null ? "" : <p style={{marginLeft:'1rem'}}>{answerTitle}</p>}
+            <FaCalculator color='#00eeff'/>{currentAnswer.title === "" ? "" : <p style={{marginLeft:'1rem'}}>{currentAnswer.title}</p>}
           </motion.div>
 
           <div className="SolutionDescription">
@@ -390,26 +439,26 @@ function App() {
             className="Problem"
             animate={
               {
-                x: answer === null ? 100 : 0,
-                opacity: answer === null ? 0 : 1,
+                x: currentAnswer.title === null ? 100 : 0,
+                opacity: currentAnswer.title === null ? 0 : 1,
               }
             }
             transition={{ delay: 0.75, duration: 0.5 }}
             >
-              <b>Problem:</b> {transcript}
+              <b>Problem:</b> {currentAnswer.problem}
             </motion.p>
 
             <motion.p
             className="Answer"
             animate={
               {
-                x: answer === null ? 150 : 0,
-                opacity: answer === null ? 0 : 1,
+                x: currentAnswer.title === null ? 150 : 0,
+                opacity: currentAnswer.title === null ? 0 : 1,
               }
             }
             transition={{ delay: 1, duration: 0.5 }}
             >
-              <b>Solution:</b> {solutionText === null ? "" : solutionText}
+              <b>Solution:</b> {currentAnswer.solution === "" === null ? "" : currentAnswer.solution}
             </motion.p>
 
           </div>
@@ -417,12 +466,12 @@ function App() {
           className="LatexContainer"
           animate={
             {
-              scale: answer === null ? 0 : 1,
+              scale: currentAnswer.title === null ? 0 : 1,
             }
           }
           transition={{ delay: 1.5 }}
           >
-            {answer === null ? "" : <Latex>{answer}</Latex>}
+            {currentAnswer.title === null ? "" : <Latex>{currentAnswer.latex}</Latex>}
           </motion.div>
 
           <div className="SolutionButtons">
@@ -437,8 +486,8 @@ function App() {
               animate = {
                 {
                   
-                  y: answer === null ? 50 : 0,
-                  opacity: answer === null ? 0 : 1,
+                  y: currentAnswer.title === null ? 50 : 0,
+                  opacity: currentAnswer.title === null ? 0 : 1,
 
                 }
               }
@@ -462,8 +511,8 @@ function App() {
               animate = {
                 {
                   
-                  y: answer === null ? 50 : 0,
-                  opacity: answer === null ? 0 : 1,
+                  y: currentAnswer.title === null ? 50 : 0,
+                  opacity: currentAnswer.title === null ? 0 : 1,
                 }
               }
               transition={{ delay: 2, duration: 0.5 }}
