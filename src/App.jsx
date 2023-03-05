@@ -35,6 +35,7 @@ function App() {
   const [isFirstTime, setIsFirstTime] = useState(true); // is it the first time the user is using the app?
   const [isInitialized, setIsInitialized] = useState(false);
   const [zeldaState, setZeldaState] = useState(0);
+  const [generatingResponse, setGeneratingResponse] = useState(false);
   //PROMPT VARIABLES
   const [promptMemory, setPromptMemory] = useState(``);
   const [currentResponse, setCurrentResponse] = useState('');
@@ -90,6 +91,7 @@ function App() {
           setCurrentResponse(response.response);
           zeldaTalk(response.response);
           addToConversation("Zelda", response.response);
+          setGeneratingResponse(false);
   
           setPromptMemory(promptMemory + "\nHuman: " + prompt + "\nZelda:" + JSON.stringify(response));
         } catch (error) {
@@ -97,7 +99,8 @@ function App() {
             addToConversation(prompt, "I'm sorry, I didn't understand that. Can you try again?");
             setCurrentResponse("I'm sorry, I didn't understand that. Can you try again?");
             zeldaTalk("I'm sorry, I didn't understand that. Can you try again?");
-        }
+            setGeneratingResponse(false);
+          }
       });
     
     }
@@ -137,6 +140,7 @@ function App() {
     SpeechRecognition.stopListening();
     setZeldaState(1);
     addToConversation("User", transcript);
+    setGeneratingResponse(true);
     getZeldaResponse(transcript);
   }
 
@@ -151,6 +155,12 @@ function App() {
   return (
 
     <div className="App">
+      
+      <div className="Background">
+      </div>
+
+      <div className="TopShadow">
+      </div>
 
       <div className="MicrophoneContainer">
         <p>Microphone: {listening ? 'on' : 'off'}</p>
@@ -194,11 +204,14 @@ function App() {
         </motion.div>
       </div>
 
-      <div className = "DialogContainer">
+      <motion.div className = "DialogContainer"
+        animate = {
+          {
+            x: 0,
+          }
+        }>
 
         <div className="Dialogs">
-          <div className="DialogShadow">
-          </div>
           {
             // userConversation.map((userText, index) => {
             //   return (
@@ -226,6 +239,18 @@ function App() {
               )
             })
           }
+          <motion.div
+            className="ResponseAnimationContainer"
+            animate={
+              {
+                scale: generatingResponse ? 1 : 0,
+              }
+            }>
+            <img
+              className="ResponseAnimation"
+              src="./src/assets/img/response-generating.gif"
+            />
+          </motion.div>
         </div>
 
         {/* User Record Button */}
@@ -285,8 +310,16 @@ function App() {
 
         </div>
 
-      </div>
-  
+      </motion.div>
+
+      <motion.div className="SolutionContainer"
+        animate = {
+          {
+            x: 700,
+          }
+        }>
+        <h1>Solution</h1>
+      </motion.div>
 
     </div>
   )

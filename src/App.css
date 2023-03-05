@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic');
+@import url('https://fonts.googleapis.com/css?family=Raleway:regular,bold,italic');
 
 #root {
   max-width: 1024px;
@@ -6,6 +7,7 @@
   overflow: auto;
   margin: 0 auto; /* centers the container horizontally */
   text-align: center;
+  background-color: #000;
 }
 
 .App {
@@ -13,7 +15,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #000;
+
   display: flex;
   flex-direction: row;
   
@@ -22,6 +24,19 @@
   overflow: hidden;
   margin: 0 auto; /* centers the container horizontally */
 
+}
+
+.Background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url('./src/assets/img/zelda-bg2.gif');
+  opacity: 0.5;
+  width: 1024px;
+  height: 600px;
+  overflow: hidden;
+  margin: 0 auto; /* centers the container horizontally */
+  z-index: -1;
 }
 
 
@@ -104,7 +119,7 @@
   padding-inline: 1rem;
 }
 
-.DialogShadow {
+.TopShadow {
   height: 10rem;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
   z-index: 5;
@@ -115,28 +130,44 @@
 
 .Dialogs div{
   font-family: 'Roboto';
+  font-weight: bold;
   font-size: 1.5rem;
   padding: 0.8rem;
   /* border: 1px solid #fff; */
 }
 
 .UserDialog {
+  filter: drop-shadow(0 0 0.5rem #53ffa9aa);
   text-align: right;
   margin-left: 6rem;
-  background: -webkit-linear-gradient(#00A99A, #61CE97);
+  background: linear-gradient(to bottom right, #00ffea, #53ffa9);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .ZeldaDialog {
+  filter: drop-shadow(0 0 0.5rem #20D2FEdd);
   text-align: left;
-  font-weight: bold;
   margin-right: 6rem;
-  background: -webkit-linear-gradient(#F8C481, #FCE091);
+  background: linear-gradient(to bottom right, #00eeff, #6865ff);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.ResponseAnimationContainer {
+  height: 1.5rem;
+  width: 9rem;
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.ResponseAnimation {
+  height: 4.5rem;
+  width: 4.5rem;
 }
 
 .Transcript img {
@@ -179,3 +210,16 @@
   background-color: #000;
 }
 
+/* Solution */
+
+.SolutionContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  background-color: #ffffff00;
+  border: 1px solid #fff;
+  height: 100%;
+  width: 50%;
+  pointer-events: none;
+}
