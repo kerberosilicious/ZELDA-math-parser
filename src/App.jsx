@@ -7,11 +7,13 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import Polly from './tools/Polly';
 
 // ? ICON IMPORTS * //
-import { FaMicrophone, FaStop } from 'react-icons/fa';
+import { FaMicrophone, FaStop, FaCalculator, FaComment } from 'react-icons/fa';
 
 // ? Module Imports * //
 import 'axios';
 import {v4 as uuid} from 'uuid'
+import 'katex/dist/katex.min.css'
+import Latex from 'react-latex-next'
 
 // ? Prompt * //
 
@@ -36,6 +38,9 @@ function App() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [zeldaState, setZeldaState] = useState(0);
   const [generatingResponse, setGeneratingResponse] = useState(false);
+  const [answer, setAnswer] = useState(null);
+  const [answerTitle, setAnswerTitle] = useState(null);
+  const [solutionText, setSolutionText] = useState(null);
   //PROMPT VARIABLES
   const [promptMemory, setPromptMemory] = useState(``);
   const [currentResponse, setCurrentResponse] = useState('');
@@ -61,8 +66,10 @@ function App() {
     isFirstMount.current = false;
     if(isFirstTime) {
       setIsFirstTime(false);
-      addToConversation("Zelda", "Hello, I'm Zelda. What can I do for you today?");
-      zeldaTalk("Hello, I'm Zelda. What can I do for you today?");
+      setGeneratingResponse(true);
+      // addToConversation("Zelda", "Hello, I'm Zelda. What can I do for you today?");
+      // zeldaTalk("Hello, I'm Zelda. What can I do for you today?");
+      getZeldaResponse("You've just booted. Make a short greeting to the user (me).");
     }
   }
 
@@ -87,6 +94,8 @@ function App() {
       .then((data) => {
         try {
           const response = JSON.parse(data.data.choices[0].text);
+
+          console.log(response);
   
           setCurrentResponse(response.response);
           zeldaTalk(response.response);
@@ -94,6 +103,19 @@ function App() {
           setGeneratingResponse(false);
   
           setPromptMemory(promptMemory + "\nHuman: " + prompt + "\nZelda:" + JSON.stringify(response));
+        
+          if(response.latex !== undefined) {
+            setAnswer(response.latex);
+          }
+
+          if(response.title !== undefined) {
+            setAnswerTitle(response.title);
+          }
+        
+          if(response.solution !== undefined) {
+            setSolutionText(response.solution);
+          }
+
         } catch (error) {
             console.log(error);
             addToConversation(prompt, "I'm sorry, I didn't understand that. Can you try again?");
@@ -137,11 +159,36 @@ function App() {
 
   const stopSpeech = async() => {
     // stop recording the user's speech
-    SpeechRecognition.stopListening();
+    if(!generatingResponse)
+    {
+      SpeechRecognition.stopListening();
+      setZeldaState(1);
+      let message = transcript;
+      if(transcript === "") {
+        message = "...";
+      }
+      addToConversation("User", message);
+      setGeneratingResponse(true);
+      getZeldaResponse(message);
+    }
+  }
+
+  const saveAnswer = () => {
+    // save the answer to the database
+    setAnswer(null);
+  }
+
+  const respond = () => {
+    saveAnswer();
+    recordSpeech();
+  }
+
+  const explain = () => {
+    saveAnswer();
     setZeldaState(1);
-    addToConversation("User", transcript);
+    addToConversation("User", "Can you explain?");
     setGeneratingResponse(true);
-    getZeldaResponse(transcript);
+    getZeldaResponse("Can you explain?");
   }
 
 
@@ -162,14 +209,6 @@ function App() {
       <div className="TopShadow">
       </div>
 
-      <div className="MicrophoneContainer">
-        <p>Microphone: {listening ? 'on' : 'off'}</p>
-        <button onClick={SpeechRecognition.startListening}>Start</button>
-        <button onClick={SpeechRecognition.stopListening}>Stop</button>
-        <button onClick={resetTranscript}>Reset</button>
-        <p>{transcript}</p>
-      </div>
-
       {/* <motion.div
         className="NamePrompt"
         initial={{ scale: 0 }}
@@ -181,7 +220,15 @@ function App() {
       </motion.div> */}
 
 
-      <div className="ZeldaContainer">
+      <motion.div 
+        className="ZeldaContainer"
+        animate={
+          {
+            x: answer !== null ? -50 : 0,
+            scale: answer !== null ? 0.8 : 1,
+          }
+        }
+        >
         <motion.div
           className="Zelda"
           >
@@ -202,12 +249,12 @@ function App() {
             animate={{ scale: 1}}
             />
         </motion.div>
-      </div>
+      </motion.div>
 
       <motion.div className = "DialogContainer"
         animate = {
           {
-            x: 0,
+            x: answer === null ? 0 : 700,
           }
         }>
 
@@ -315,10 +362,118 @@ function App() {
       <motion.div className="SolutionContainer"
         animate = {
           {
-            x: 700,
+            x: answer === null ? 700 : 0,
+            scale: 0.95,
           }
         }>
-        <h1>Solution</h1>
+        <div className="Solution">
+          <motion.div
+            className="SolutionHeader"
+            animate={
+              {
+                x: answer === null ? 50 : 0,
+                opacity: answer === null ? 0 : 1,
+              }
+            }
+            transition={{ delay: 0.5, duration: 0.5 }}
+            >
+            <FaCalculator color='#00eeff'/>{answerTitle === null ? "" : <p style={{marginLeft:'1rem'}}>{answerTitle}</p>}
+          </motion.div>
+
+          <div className="SolutionDescription">
+            
+            <motion.p
+            className="Problem"
+            animate={
+              {
+                x: answer === null ? 100 : 0,
+                opacity: answer === null ? 0 : 1,
+              }
+            }
+            transition={{ delay: 0.75, duration: 0.5 }}
+            >
+              <b>Problem:</b> {transcript}
+            </motion.p>
+
+            <motion.p
+            className="Answer"
+            animate={
+              {
+                x: answer === null ? 150 : 0,
+                opacity: answer === null ? 0 : 1,
+              }
+            }
+            transition={{ delay: 1, duration: 0.5 }}
+            >
+              <b>Solution:</b> {solutionText === null ? "" : solutionText}
+            </motion.p>
+
+          </div>
+          <motion.div
+          className="LatexContainer"
+          animate={
+            {
+              scale: answer === null ? 0 : 1,
+            }
+          }
+          transition={{ delay: 1.5 }}
+          >
+            {answer === null ? "" : <Latex>{answer}</Latex>}
+          </motion.div>
+
+          <div className="SolutionButtons">
+            <motion.button
+              className="ExplainButton"
+              style = {
+                {
+                  background: "linear-gradient(90deg, #FF33B8 0%, #FD778C 100%)",
+                  boxShadow: "0 0 0.5rem #FF33B8",
+                }
+              }
+              animate = {
+                {
+                  
+                  y: answer === null ? 50 : 0,
+                  opacity: answer === null ? 0 : 1,
+
+                }
+              }
+              transition={{ delay: 1.8, duration: 0.5 }}
+              whileTap={{scale: 0.9}}
+              onClick={() => {
+                explain();
+                }
+              }
+              >
+              <FaComment /><p style={{marginLeft: '1rem'}}>Explain</p>
+            </motion.button>
+            <motion.button
+              className="RespondButton"
+              style = {
+                {
+                  background: "linear-gradient(90deg, #704CFE 0%, #9074FE 100%)",
+                  boxShadow: "0 0 0.5rem #9074FE",
+                }
+              }
+              animate = {
+                {
+                  
+                  y: answer === null ? 50 : 0,
+                  opacity: answer === null ? 0 : 1,
+                }
+              }
+              transition={{ delay: 2, duration: 0.5 }}
+              whileTap={{scale: 0.9}}
+              onClick={() => {
+                respond();
+                }
+              }
+              >
+              <FaMicrophone /><p style={{marginLeft: '1rem'}}>Respond</p>
+            </motion.button>
+          </div>
+          
+        </div>
       </motion.div>
 
     </div>
@@ -326,3 +481,7 @@ function App() {
 }
 
 export default App
+
+
+
+////ghfgfhjhgdrhfgfhjkgrfgdghfhjkdfghdfghghjffghjghjf

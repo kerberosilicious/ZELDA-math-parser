@@ -191,6 +191,7 @@
 }
 
 
+
 /* put nameprompt at the center of screen */
 .NamePrompt {
   background-color: #1B1B44;
@@ -217,9 +218,106 @@
   top: 0;
   right: 0;
   z-index: 10;
-  background-color: #ffffff00;
-  border: 1px solid #fff;
   height: 100%;
-  width: 50%;
-  pointer-events: none;
+  width: 60%;
+  display: flex;
+
+  font-family: 'Raleway';
+}
+
+.Solution {
+  background-color: #000000aa;
+  box-shadow: 0 0 0.2rem #ffffffaa;
+  /* backdrop-filter: blur(0.5rem); */
+  flex: 1;
+  border-radius: 3rem;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+
+.SolutionHeader {
+  display: flex;
+  flex-direction: row;
+  height: 5rem;
+  margin-left: 3rem;
+  font-weight: bold;
+  font-size: 2rem;
+  align-items: center;
+  background: linear-gradient(to bottom right, #00eeff, #6865ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.SolutionDescription {
+  display: flex;
+  flex-direction: column;
+  margin-inline: 3rem;
+  font-size: 1.2rem;
+  /* border: 1px solid #fff; */
+}
+
+.SolutionDescription p {
+  margin: 0;
+}
+
+.LatexContainer {
+  border-radius: 3rem;
+  margin: 2rem;
+  height: 100%;
+  display: flex;
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #000;
+  background: linear-gradient(to bottom right, #00eeff, #6865ff);
+  box-shadow: 0 0 1rem #00eeffaa;
+}
+
+.SolutionButtons {
+  /* border: 1px solid #fff; */
+  border-radius: 2rem;
+  height: 15rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+.SolutionButtons button {
+  background: linear-gradient(90deg, #FF33B8 0%, #FD778C 100%);
+  border: none;
+  outline: none;
+  width: 16rem;
+  border-radius: 2rem;
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  margin-inline: 0.8rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Raleway';
+  font-weight: bold;
+}
+
+
+
+.Problem b{
+  background: linear-gradient(to bottom right, #00ffea, #53ffa9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.Answer b{
+  background: linear-gradient(to bottom right, #ebff79, #ffbe73);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
