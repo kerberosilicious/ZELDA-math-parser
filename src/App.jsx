@@ -75,6 +75,7 @@ function App() {
 
     if (isInitialized && !listening) {
       // Call your function here
+      console.log("stopping speech");
       stopSpeech();
       setIsInitialized(false);
     }
@@ -155,6 +156,7 @@ function App() {
     setIsInitialized(true);
     setZeldaState(3);
     SpeechRecognition.startListening();
+    console.log("listening...");
   }
 
   const stopSpeech = async() => {
