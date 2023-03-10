@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic');
 @import url('https://fonts.googleapis.com/css?family=Raleway:regular,bold,italic');
 
+* {
+  user-select: none;
+}
+
 #root {
   max-width: 1024px;
   height: 600px;
@@ -320,4 +324,145 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Solution */
+
+.HistoryContainer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  height: 100%;
+  width: 60%;
+  display: flex;
+
+  font-family: 'Raleway';
+
+  /* pointer-events: none; */
+}
+
+.History {
+  background-color: #000000aa;
+  box-shadow: 0 0 0.2rem #ffffffaa;
+  /* backdrop-filter: blur(0.5rem); */
+  flex: 1;
+  border-radius: 3rem;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.HistoryHeader {
+  display: flex;
+  flex-direction: row;
+  height: 5rem;
+  margin-left: 3rem;
+  font-weight: bold;
+  font-size: 2rem;
+  align-items: center;
+  background: linear-gradient(to bottom right, #ffec81, #ffae00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.HistoryList {
+  display: flex;
+  flex-direction: column;
+  margin-inline: 2rem;
+  font-size: 1.2rem;
+  /* border: 1px solid #fff; */
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.HistoryItem {
+  display: flex;
+  flex-direction: row;
+  border-radius: 3rem;
+  height: 5rem;
+  padding-inline: 3rem;
+  font-size: 2rem;
+  align-items: center;
+  background: linear-gradient(to bottom right, #fffffc, #fffefb);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  box-shadow: 0 0 0.2rem #ffffffaa;
+  margin-bottom: 1rem;
+  width: 100%;
+}
+
+.HistoryIndex {
+  background: linear-gradient(to bottom right, #ffec81, #ffae00);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  color:rgba(0, 0, 0, 0);
+}
+
+.HistoryButtons {
+  /* border: 1px solid #fff; */
+  border-radius: 2rem;
+  height: 10rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  width: 100%;
+}
+
+.HistoryButtons button {
+  background: linear-gradient(90deg, #ffec81 0%, #ffae00 100%);
+  border: none;
+  outline: none;
+  width: 12rem;
+  border-radius: 2rem;
+  font-size: 1.5rem;
+  color: #000;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-inline: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Raleway';
+  font-weight: bold;
+}
+
+.HistoryButton {
+  background: none;
+  border: none;
+  outline: none;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  z-index: 20;
+  font-size: 1.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Raleway';
+  font-weight: bold;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 1rem;
+  margin-right: 1rem;
+  box-shadow: 0 0 0.2rem #ffffffaa;
+}
+
+.Blocker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+  background-color: #00000000;
+  /* backdrop-filter: blur(0.5rem); */
+  pointer-events: all;
 }
