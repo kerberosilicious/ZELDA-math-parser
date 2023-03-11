@@ -10,10 +10,10 @@ import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-po
 import Polly from './tools/Polly';
 const appId = '0c2b5012-c2d6-42e6-b97d-70474bfa2ed0';
 const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
-// SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
+SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
 
 // ? ICON IMPORTS * //
-import { FaMicrophone, FaStop, FaCalculator, FaComment, FaHistory, FaUndo } from 'react-icons/fa';
+import { FaMicrophone, FaStop, FaCalculator, FaComment, FaHistory, FaUndo, FaBackspace, FaCheck } from 'react-icons/fa';
 
 // ? Module Imports * //
 import 'axios';
@@ -52,6 +52,8 @@ function App() {
   const [fromHistory, setFromHistory] = useState(false);
   const [currentResponse, setCurrentResponse] = useState('');
 
+  const [appState, setAppState] = useState(0);
+
   // SPEECH RECOGNITION VARIABLES
   const {
     transcript,
@@ -67,16 +69,16 @@ function App() {
 
   useEffect(() => {
      
-    if (isFirstMount.current) {
-    isFirstMount.current = false;
-    if(isFirstTime) {
-      setIsFirstTime(false);
-      setGeneratingResponse(true);
-      // addToConversation("Zelda", "Hello, I'm Zelda. What can I do for you today?");
-      // zeldaTalk("Hello, I'm Zelda. What can I do for you today?");
-      getZeldaResponse("You've just booted. Make a short greeting to the user (me).");
-    }
-  }
+  //   if (isFirstMount.current) {
+  //   isFirstMount.current = false;
+  //   if(isFirstTime) {
+  //     setIsFirstTime(false);
+  //     setGeneratingResponse(true);
+  //     // addToConversation("Zelda", "Hello, I'm Zelda. What can I do for you today?");
+  //     // zeldaTalk("Hello, I'm Zelda. What can I do for you today?");
+  //     getZeldaResponse("You've just booted. Make a short greeting to the user (me).");
+  //   }
+  // }
 
     if (isInitialized && !listening) {
       // Call your function here
@@ -84,18 +86,34 @@ function App() {
       stopSpeech();
       setIsInitialized(false);
     }
-  }, [listening, isFirstTime]);
+  }, [listening]);
 
   // **************** //
   // *FUNCTIONS BLOCK //
   // **************** //
+  
+  const handleConfirmName = () => {
+      setGeneratingResponse(true);
+      // addToConversation("Zelda", "Hello, I'm Zelda. What can I do for you today?");
+      // zeldaTalk("Hello, I'm Zelda. What can I do for you today?");
+      getZeldaResponse(`You've just booted. Make a short greeting to ${name}.`);
+  //   
+  }
+
+  const handleAddName = (char) => {
+    if (name.length < 14) {
+      setName(name + char);
+    } else {
+      setName(name.slice(0, 14));
+    }
+  };
 
   const getZeldaResponse = async(prompt) => {
 
     await openai.createCompletion({
       model: "text-davinci-003",
       max_tokens: 1000,
-      prompt: corePrompt + promptMemory + "\nHuman: " + prompt + "\nZelda:",
+      prompt: corePrompt(name) + promptMemory + "\nHuman: " + prompt + "\nZelda:",
       })
       .then((data) => {
         try {
@@ -263,431 +281,610 @@ function App() {
   // *RENDER FUNCTION //
   // **************** //
 
+  let firstRow = name.length < 1 ? "QWERTYUIOP" : "qwertyuiop";
+  let secondRow = name.length < 1 ? "ASDFGHJKL" : "asdfghjkl";
+  let lastRow = name.length < 1 ? "ZXCVBNM" : "zxcvbnm";
+
   return (
 
-    <div className="App">
-      
-      <div className="Background">
-      </div>
-
-      <div className="TopShadow">
-      </div>
-
-      {/* <motion.div
-        className="NamePrompt"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 1 }}
-      >
-        <h1>What's your name?</h1>
-        <input value={name} onChange={(e) => setName(e.target.value)} />
-      </motion.div> */}
-
-
-      <motion.div 
-        className="ZeldaContainer"
+    <div className='AppContainer'>
+      <motion.div className="Intro"
         animate={
           {
-            x: currentAnswer.title !== null || showingHistory ? -50 : 0,
-            scale: currentAnswer.title || showingHistory ? 0.8 : 1,
+            scale: appState === 0 ? 1 : 0,
           }
-        }
-        >
+        }>
         <motion.div
-          className="Zelda"
+          className="AskName"
+          initial={
+            {
+              opacity: 0,
+              y: -100
+            }
+          }
+          animate={
+            {
+              opacity: 1,
+              y: 0
+            }
+          }
+          transition={
+            {
+              duration: 0.5
+            }
+          }
           >
-          <motion.img
-            className="ZeldaImage"
-            src={(() => {
-              switch(zeldaState) {
-                case 0: return Math.random() < 0.5 ? "./src/assets/img/idle_loop.gif" : "./src/assets/img/idle_loop2.gif";
-                case 1: return "./src/assets/img/thinking_loop.gif";
- 
-                break;
-                case 2: return "./src/assets/img/talking_loop.gif";
-                case 3: return "./src/assets/img/listen_loop.gif";
-                default: return "./src/assets/img/idle_loop.gif";
+            What's your name?
+        </motion.div>
+        <div className="NameInputContainer">
+          <motion.div
+            className={
+              name !== "" ? "NameInput" : "NameInput PlaceholderName"
+            }
+            initial={
+              {
+                opacity: 0,
               }
-              })()}
-            initial={{ scale: 0 }}
-            animate={{ scale: 1}}
-            />
+            }
+            animate={
+              {
+                opacity: 1,
+              }
+            }
+            transition={
+              {
+                delay:0.8,
+              }
+            }
+          >
+            {name === "" ? "Link" : name}
+          </motion.div>
+          
+          <motion.button
+              className='NameCheck'
+              whileTap={
+                {
+                  scale: 0.9
+                }
+              }
+              onClick={
+                () => {
+                  if(name.length > 0)
+                  {
+                    setAppState(1);
+                    handleConfirmName();
+                  }
+                }
+              }
+              initial={
+                {
+                  opacity: 0,
+                }
+              }
+              animate={
+                {
+                  opacity: 1,
+                }
+              }
+              transition={
+                {
+                  delay:1,
+                }
+              }
+              >
+              <FaCheck color="00ffea"/>
+          </motion.button>
+        </div>
+        <motion.div
+          className="Keyboard"
+          initial={
+            {
+              scale: 0,
+            }
+          }
+          animate={
+            {
+              scale: 1,
+            }
+          }
+          transition={
+            {
+              delay:0.4,
+            }
+          }
+          >
+          <div className="FirstRow">
+            {firstRow.split('').map((letter) => (
+              <motion.button
+                className="Letter"
+                onClick={() => handleAddName(letter)}
+                whileTap={
+                  {
+                    scale: 0.9
+                  }
+                }>
+                {letter}
+              </motion.button>
+            ))}
+          </div>
+          <div className="SecondRow">
+            {secondRow.split('').map((letter) => (
+              <motion.button
+                className="Letter"
+                onClick={() => handleAddName(letter)}
+                whileTap={
+                  {
+                    scale: 0.9
+                  }
+                }>
+                {letter}
+              </motion.button>
+            ))}
+          </div>
+          <div className="LastRow">
+            {lastRow.split('').map((letter) => (
+              <motion.button
+                className="Letter"
+                onClick={() => handleAddName(letter)}
+                whileTap={
+                  {
+                    scale: 0.9
+                  }
+                }>
+                {letter}
+              </motion.button>
+            ))}
+            
+            <motion.button
+                className="Backspace"
+                style={
+                  {
+                    width: "5rem",
+                  }
+                }
+                onClick={() => setName(name.slice(0, -1))}
+                whileTap={
+                  {
+                    scale: 0.9
+                  }
+                }>
+                <FaBackspace color="00ff80"/>
+            </motion.button>
+          </div>
         </motion.div>
       </motion.div>
 
-      <motion.div className = "DialogContainer"
-        animate = {
+      <motion.div className="App"
+        animate={
           {
-            x: currentAnswer.title === null && !showingHistory ? 0 : 700,
-          }
-        }>
-
-        <div className="Dialogs">
-          {
-            // userConversation.map((userText, index) => {
-            //   return (
-            //     <div>
-            //       <div className="UserDialog" key={`user-${index}`}>
-            //         {userText}
-            //       </div>
-            //       <div className="ZeldaDialog" key={`zelda-${index}`}>
-            //         {zeldaConversation[index]}
-            //       </div>
-            //     </div>
-            //   )
-            // }
-            // )
-            conversation.map((text) => {
-              return (
-                <motion.div
-                  className={text.speaker === "User" ? "UserDialog" : "ZeldaDialog"}
-                  key={`${text.id}`}
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0}}
-                  >
-                  {text.text}
-                </motion.div>
-              )
-            })
-          }
-          <motion.div
-            className="ResponseAnimationContainer"
-            animate={
-              {
-                scale: generatingResponse ? 1 : 0,
-              }
-            }>
-            <img
-              className="ResponseAnimation"
-              src="./src/assets/img/response-generating.gif"
-            />
-          </motion.div>
-        </div>
-
-        {/* User Record Button */}
-        <div className="RecordButtonContainer">
-
-          <motion.div
-            className="Transcript"
-            animate={
-              {
-                width: listening ? "100%" : "0%",
-              }
-            }
-          >
-            <motion.img 
-              src="./src/assets/img/recordingAnim.gif" 
-              animate={
-                {
-                  scale: listening ? 1 : 0,
-                }
-              }
-              transition={{ delay: 0.5 }}
-            />
-              {listening ? transcript : ""}
-          </motion.div>
-
-          <motion.button
-
-            className="RecordButton"
-
-            animate = {
-              {
-                background: 
-                listening 
-                ? "linear-gradient(90deg, #FF33B8 0%, #FD778C 100%)"
-                : "linear-gradient(90deg, #704CFE 0%, #9074FE 100%)"
-                ,
-                boxShadow:
-                listening
-                ? "0 0 1.5rem #FD778C"
-                : "0 0 0.5rem #9074FE"
-              }
-            }
-
-            whileTap={{ scale: 0.9, rotate: 360}}
-            onClick={() => {
-              if (!listening) {
-                recordSpeech();
-              } else
-              {
-                stopSpeech();
-              }
-            }}
-
-          >
-            {listening ? <FaStop /> : <FaMicrophone />}
-          </motion.button>
-        </div>
-
-      </motion.div>
-
-      <motion.div className="SolutionContainer"
-        animate = {
-          {
-            x: currentAnswer.title === null ? 700 : 0,
-            scale: 0.95,
-          }
-        }>
-        <div className="Solution">
-          <motion.div
-            className="SolutionHeader"
-            animate={
-              {
-                x: currentAnswer.title === null ? 50 : 0,
-                opacity: currentAnswer.title === null ? 0 : 1,
-              }
-            }
-            transition={{ delay: 0.5, duration: 0.5 }}
-            >
-            <FaCalculator color='#00eeff'/>{currentAnswer.title === "" ? "" : <p style={{marginLeft:'1rem'}}>{currentAnswer.title}</p>}
-          </motion.div>
-
-          <div className="SolutionDescription">
-            
-            <motion.p
-            className="Problem"
-            animate={
-              {
-                x: currentAnswer.title === null ? 100 : 0,
-                opacity: currentAnswer.title === null ? 0 : 1,
-              }
-            }
-            transition={{ delay: 0.75, duration: 0.5 }}
-            >
-              <b>Problem:</b> {currentAnswer.problem}
-            </motion.p>
-
-            <motion.p
-            className="Answer"
-            animate={
-              {
-                x: currentAnswer.title === null ? 150 : 0,
-                opacity: currentAnswer.title === null ? 0 : 1,
-              }
-            }
-            transition={{ delay: 1, duration: 0.5 }}
-            >
-              <b>Solution:</b> {currentAnswer.solution === "" === null ? "" : currentAnswer.solution}
-            </motion.p>
-
-          </div>
-          <motion.div
-          className="LatexContainer"
-          animate={
-            {
-              scale: currentAnswer.title === null ? 0 : 1,
-            }
-          }
-          transition={{ delay: 1.5 }}
-          >
-            {currentAnswer.title === null ? "" : <Latex>{currentAnswer.latex}</Latex>}
-          </motion.div>
-          {
-            fromHistory
-            ?
-            <div className="SolutionButtons">
-            <motion.button
-              className="ExplainButton"
-              style = {
-                {
-                  background: "linear-gradient(90deg, #FF33B8 0%, #FD778C 100%)",
-                  boxShadow: "0 0 0.5rem #FF33B8",
-                }
-              }
-              animate = {
-                {
-                  
-                  y: currentAnswer.title === null ? 50 : 0,
-                  opacity: currentAnswer.title === null ? 0 : 1,
-
-                }
-              }
-              whileTap={{scale: 0.9}}
-              onClick={() => {
-                clearAnswer();
-                setFromHistory(false);
-                setShowingHistory(true);
-                }
-              }
-              >
-              <FaHistory /><p style={{marginLeft: '1rem'}}>History</p>
-            </motion.button>
-            <motion.button
-              className="RespondButton"
-              style = {
-                {
-                  background: "linear-gradient(90deg, #704CFE 0%, #9074FE 100%)",
-                  boxShadow: "0 0 0.5rem #9074FE",
-                }
-              }
-              animate = {
-                {
-                  
-                  y: currentAnswer.title === null ? 50 : 0,
-                  opacity: currentAnswer.title === null ? 0 : 1,
-                }
-              }
-              whileTap={{scale: 0.9}}
-              onClick={() => {
-                clearAnswer();
-                setFromHistory(false);
-                }
-              }
-              >
-              <FaUndo /><p style={{marginLeft: '1rem'}}>Return</p>
-            </motion.button>
-          </div>
-            : //NOT FROM HISTORY
-            <div className="SolutionButtons">
-            <motion.button
-              className="ExplainButton"
-              style = {
-                {
-                  background: "linear-gradient(90deg, #FF33B8 0%, #FD778C 100%)",
-                  boxShadow: "0 0 0.5rem #FF33B8",
-                }
-              }
-              animate = {
-                {
-                  
-                  y: currentAnswer.title === null ? 50 : 0,
-                  opacity: currentAnswer.title === null ? 0 : 1,
-
-                }
-              }
-              whileTap={{scale: 0.9}}
-              onClick={() => {
-                explain();
-                }
-              }
-              >
-              <FaComment /><p style={{marginLeft: '1rem'}}>Explain</p>
-            </motion.button>
-            <motion.button
-              className="RespondButton"
-              style = {
-                {
-                  background: "linear-gradient(90deg, #704CFE 0%, #9074FE 100%)",
-                  boxShadow: "0 0 0.5rem #9074FE",
-                }
-              }
-              animate = {
-                {
-                  
-                  y: currentAnswer.title === null ? 50 : 0,
-                  opacity: currentAnswer.title === null ? 0 : 1,
-                }
-              }
-              whileTap={{scale: 0.9}}
-              onClick={() => {
-                respond();
-                }
-              }
-              >
-              <FaMicrophone /><p style={{marginLeft: '1rem'}}>Respond</p>
-            </motion.button>
-          </div>
-          }
-          
-          
-        </div>
-      </motion.div>
-      
-      <motion.div className="HistoryContainer"
-        animate = {
-          {
-            x: showingHistory === false ? 700 : 0,
-            scale: 0.95,
-          }
-        }>
-        <div className="History">
-          <div className="HistoryHeader">
-            <FaHistory color='#ffec81'/><p style={{marginLeft:'1rem'}}>History</p>
-          </div>
-          <ScrollContainer
-            className="HistoryList"
-            hideScrollbars= {true}>
-            {answerDatabase.reverse().map((item, index) => {
-              return (
-                <motion.button
-                  className="HistoryItem"
-                  animate={
-                    {
-                      x: item.title === null ? 50 : 0,
-                      opacity: item.title === null ? 0 : 1,
-                    }
-                  }
-                  // transition={{ delay: index * 0.1, duration: 0.5 }}
-                  whileTap={{scale: 0.9}}
-                  onClick={
-                    () => {
-                      setFromHistory(true);
-                      setShowingHistory(false);
-                      setCurrentAnswer(item);
-                    }
-                  }
-                  >
-                  <div className="HistoryIndex">{answerDatabase.length - index}</div><p style={{marginLeft:'2rem'}}>{item.title}</p>
-                </motion.button>
-              )
-            })} 
-          </ScrollContainer>
-          <div className="HistoryButtons">
-            <motion.button
-              className="UndoButton"
-              style = {
-                {
-                  background: "linear-gradient(90deg, #ffec81 0%, #ffae00 100%)",
-                  boxShadow: "0 0 0.5rem #ffec81",
-                }
-              }
-              animate = {
-                {
-                  
-                }
-              }
-              whileTap={{scale: 0.9}}
-              onClick={() => {
-                setShowingHistory(false);
-                }
-              }
-              >
-              <FaUndo /><p style={{marginLeft: '1rem'}}>Return</p>
-            </motion.button>
-          </div>
-        </div>
-        
-      </motion.div>
-
-      <motion.button
-        className="HistoryButton"
-        animate = {
-          {
-            x: !showingHistory && currentAnswer.title === null ? 0 : -50,
-            opacity: !showingHistory && currentAnswer.title === null ? 1 : 0,
-          }
-        }
-        whileTap={{scale: 0.9}}
-        onClick={() => {
-          setShowingHistory(true);
+            scale: appState === 1 ? 1 : 0,
           }
         }
         >
-        <FaHistory color='#ffffffaa'/>
-      </motion.button>
-      {
-        zeldaState === 2 || zeldaState === 1 ?
+        <div className="Background">
+        </div>
+
+        <div className="TopShadow">
+        </div>
+
+        {/* <motion.div
+          className="NamePrompt"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 1 }}
+        >
+          <h1>What's your name?</h1>
+          <input value={name} onChange={(e) => setName(e.target.value)} />
+        </motion.div> */}
+
+
+        <motion.div 
+          className="ZeldaContainer"
+          animate={
+            {
+              x: currentAnswer.title !== null || showingHistory ? -50 : 0,
+              scale: currentAnswer.title || showingHistory ? 0.8 : 1,
+            }
+          }
+          >
+          <motion.div
+            className="Zelda"
+            >
+            <motion.img
+              className="ZeldaImage"
+              src={(() => {
+                switch(zeldaState) {
+                  case 0: return Math.random() < 0.5 ? "./src/assets/img/idle_loop.gif" : "./src/assets/img/idle_loop2.gif";
+                  case 1: return "./src/assets/img/thinking_loop.gif";
+  
+                  break;
+                  case 2: return "./src/assets/img/talking_loop.gif";
+                  case 3: return "./src/assets/img/listen_loop.gif";
+                  default: return "./src/assets/img/idle_loop.gif";
+                }
+                })()}
+              initial={{ scale: 0 }}
+              animate={{ scale: 1}}
+              />
+          </motion.div>
+        </motion.div>
+
+        <motion.div className = "DialogContainer"
+          animate = {
+            {
+              x: currentAnswer.title === null && !showingHistory ? 0 : 700,
+            }
+          }>
+
+          <div className="Dialogs">
+            {
+              // userConversation.map((userText, index) => {
+              //   return (
+              //     <div>
+              //       <div className="UserDialog" key={`user-${index}`}>
+              //         {userText}
+              //       </div>
+              //       <div className="ZeldaDialog" key={`zelda-${index}`}>
+              //         {zeldaConversation[index]}
+              //       </div>
+              //     </div>
+              //   )
+              // }
+              // )
+              conversation.map((text) => {
+                return (
+                  <motion.div
+                    className={text.speaker === "User" ? "UserDialog" : "ZeldaDialog"}
+                    key={`${text.id}`}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0}}
+                    >
+                    {text.text}
+                  </motion.div>
+                )
+              })
+            }
+            <motion.div
+              className="ResponseAnimationContainer"
+              animate={
+                {
+                  scale: generatingResponse ? 1 : 0,
+                }
+              }>
+              <img
+                className="ResponseAnimation"
+                src="./src/assets/img/response-generating.gif"
+              />
+            </motion.div>
+          </div>
+
+          {/* User Record Button */}
+          <div className="RecordButtonContainer">
+
+            <motion.div
+              className="Transcript"
+              animate={
+                {
+                  width: listening ? "100%" : "0%",
+                }
+              }
+            >
+              <motion.img 
+                src="./src/assets/img/recordingAnim.gif" 
+                animate={
+                  {
+                    scale: listening ? 1 : 0,
+                  }
+                }
+                transition={{ delay: 0.5 }}
+              />
+                {listening ? transcript : ""}
+            </motion.div>
+
+            <motion.button
+
+              className="RecordButton"
+
+              animate = {
+                {
+                  background: 
+                  listening 
+                  ? "linear-gradient(90deg, #FF33B8 0%, #FD778C 100%)"
+                  : "linear-gradient(90deg, #704CFE 0%, #9074FE 100%)"
+                  ,
+                  boxShadow:
+                  listening
+                  ? "0 0 1.5rem #FD778C"
+                  : "0 0 0.5rem #9074FE"
+                }
+              }
+
+              whileTap={{ scale: 0.9, rotate: 360}}
+              onClick={() => {
+                if (!listening) {
+                  recordSpeech();
+                } else
+                {
+                  stopSpeech();
+                }
+              }}
+
+            >
+              {listening ? <FaStop /> : <FaMicrophone />}
+            </motion.button>
+          </div>
+
+        </motion.div>
+
+        <motion.div className="SolutionContainer"
+          animate = {
+            {
+              x: currentAnswer.title === null ? 700 : 0,
+              scale: 0.95,
+            }
+          }>
+          <div className="Solution">
+            <motion.div
+              className="SolutionHeader"
+              animate={
+                {
+                  x: currentAnswer.title === null ? 50 : 0,
+                  opacity: currentAnswer.title === null ? 0 : 1,
+                }
+              }
+              transition={{ delay: 0.5, duration: 0.5 }}
+              >
+              <FaCalculator color='#00eeff'/>{currentAnswer.title === "" ? "" : <p style={{marginLeft:'1rem'}}>{currentAnswer.title}</p>}
+            </motion.div>
+
+            <div className="SolutionDescription">
+              
+              <motion.p
+              className="Problem"
+              animate={
+                {
+                  x: currentAnswer.title === null ? 100 : 0,
+                  opacity: currentAnswer.title === null ? 0 : 1,
+                }
+              }
+              transition={{ delay: 0.75, duration: 0.5 }}
+              >
+                <b>Problem:</b> {currentAnswer.problem}
+              </motion.p>
+
+              <motion.p
+              className="Answer"
+              animate={
+                {
+                  x: currentAnswer.title === null ? 150 : 0,
+                  opacity: currentAnswer.title === null ? 0 : 1,
+                }
+              }
+              transition={{ delay: 1, duration: 0.5 }}
+              >
+                <b>Solution:</b> {currentAnswer.solution === "" === null ? "" : currentAnswer.solution}
+              </motion.p>
+
+            </div>
+            <motion.div
+            className="LatexContainer"
+            animate={
+              {
+                scale: currentAnswer.title === null ? 0 : 1,
+              }
+            }
+            transition={{ delay: 1.5 }}
+            >
+              {currentAnswer.title === null ? "" : <Latex>{currentAnswer.latex}</Latex>}
+            </motion.div>
+            {
+              fromHistory
+              ?
+              <div className="SolutionButtons">
+              <motion.button
+                className="ExplainButton"
+                style = {
+                  {
+                    background: "linear-gradient(90deg, #FF33B8 0%, #FD778C 100%)",
+                    boxShadow: "0 0 0.5rem #FF33B8",
+                  }
+                }
+                animate = {
+                  {
+                    
+                    y: currentAnswer.title === null ? 50 : 0,
+                    opacity: currentAnswer.title === null ? 0 : 1,
+
+                  }
+                }
+                whileTap={{scale: 0.9}}
+                onClick={() => {
+                  clearAnswer();
+                  setFromHistory(false);
+                  setShowingHistory(true);
+                  }
+                }
+                >
+                <FaHistory /><p style={{marginLeft: '1rem'}}>History</p>
+              </motion.button>
+              <motion.button
+                className="RespondButton"
+                style = {
+                  {
+                    background: "linear-gradient(90deg, #704CFE 0%, #9074FE 100%)",
+                    boxShadow: "0 0 0.5rem #9074FE",
+                  }
+                }
+                animate = {
+                  {
+                    
+                    y: currentAnswer.title === null ? 50 : 0,
+                    opacity: currentAnswer.title === null ? 0 : 1,
+                  }
+                }
+                whileTap={{scale: 0.9}}
+                onClick={() => {
+                  clearAnswer();
+                  setFromHistory(false);
+                  }
+                }
+                >
+                <FaUndo /><p style={{marginLeft: '1rem'}}>Return</p>
+              </motion.button>
+            </div>
+              : //NOT FROM HISTORY
+              <div className="SolutionButtons">
+              <motion.button
+                className="ExplainButton"
+                style = {
+                  {
+                    background: "linear-gradient(90deg, #FF33B8 0%, #FD778C 100%)",
+                    boxShadow: "0 0 0.5rem #FF33B8",
+                  }
+                }
+                animate = {
+                  {
+                    
+                    y: currentAnswer.title === null ? 50 : 0,
+                    opacity: currentAnswer.title === null ? 0 : 1,
+
+                  }
+                }
+                whileTap={{scale: 0.9}}
+                onClick={() => {
+                  explain();
+                  }
+                }
+                >
+                <FaComment /><p style={{marginLeft: '1rem'}}>Explain</p>
+              </motion.button>
+              <motion.button
+                className="RespondButton"
+                style = {
+                  {
+                    background: "linear-gradient(90deg, #704CFE 0%, #9074FE 100%)",
+                    boxShadow: "0 0 0.5rem #9074FE",
+                  }
+                }
+                animate = {
+                  {
+                    
+                    y: currentAnswer.title === null ? 50 : 0,
+                    opacity: currentAnswer.title === null ? 0 : 1,
+                  }
+                }
+                whileTap={{scale: 0.9}}
+                onClick={() => {
+                  respond();
+                  }
+                }
+                >
+                <FaMicrophone /><p style={{marginLeft: '1rem'}}>Respond</p>
+              </motion.button>
+            </div>
+            }
+            
+            
+          </div>
+        </motion.div>
         
-      <div className="Blocker">
-      </div>
-      :
-      <div className="Blocker" style={{display: 'none'}}>
-      </div>
+        <motion.div className="HistoryContainer"
+          animate = {
+            {
+              x: showingHistory === false ? 700 : 0,
+              scale: 0.95,
+            }
+          }>
+          <div className="History">
+            <div className="HistoryHeader">
+              <FaHistory color='#ffec81'/><p style={{marginLeft:'1rem'}}>History</p>
+            </div>
+            <ScrollContainer
+              className="HistoryList"
+              hideScrollbars= {true}>
+              {answerDatabase.reverse().map((item, index) => {
+                return (
+                  <motion.button
+                    className="HistoryItem"
+                    animate={
+                      {
+                        x: item.title === null ? 50 : 0,
+                        opacity: item.title === null ? 0 : 1,
+                      }
+                    }
+                    // transition={{ delay: index * 0.1, duration: 0.5 }}
+                    whileTap={{scale: 0.9}}
+                    onClick={
+                      () => {
+                        setFromHistory(true);
+                        setShowingHistory(false);
+                        setCurrentAnswer(item);
+                      }
+                    }
+                    >
+                    <div className="HistoryIndex">{answerDatabase.length - index}</div><p style={{marginLeft:'2rem'}}>{item.title}</p>
+                  </motion.button>
+                )
+              })} 
+            </ScrollContainer>
+            <div className="HistoryButtons">
+              <motion.button
+                className="UndoButton"
+                style = {
+                  {
+                    background: "linear-gradient(90deg, #ffec81 0%, #ffae00 100%)",
+                    boxShadow: "0 0 0.5rem #ffec81",
+                  }
+                }
+                animate = {
+                  {
+                    
+                  }
+                }
+                whileTap={{scale: 0.9}}
+                onClick={() => {
+                  setShowingHistory(false);
+                  }
+                }
+                >
+                <FaUndo /><p style={{marginLeft: '1rem'}}>Return</p>
+              </motion.button>
+            </div>
+          </div>
+          
+        </motion.div>
 
-      }  
+        <motion.button
+          className="HistoryButton"
+          animate = {
+            {
+              x: !showingHistory && currentAnswer.title === null ? 0 : -50,
+              opacity: !showingHistory && currentAnswer.title === null ? 1 : 0,
+            }
+          }
+          whileTap={{scale: 0.9}}
+          onClick={() => {
+            setShowingHistory(true);
+            }
+          }
+          >
+          <FaHistory color='#ffffffaa'/>
+        </motion.button>
+        {
+          zeldaState === 2 || zeldaState === 1 ?
+          
+        <div className="Blocker">
+        </div>
+        :
+        <div className="Blocker" style={{display: 'none'}}>
+        </div>
 
+        }
+
+
+      </motion.div>
     </div>
+    
   )
 }
 

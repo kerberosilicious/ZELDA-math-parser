@@ -466,3 +466,105 @@
   /* backdrop-filter: blur(0.5rem); */
   pointer-events: all;
 }
+
+.Intro {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  height: 100%;
+  width: 100%;
+  background-color: #000000;
+  pointer-events: all;
+  font-family: 'Raleway';
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.AskName {
+  font-size: 4rem;
+  font-weight: bold;
+  margin-top: 3rem;
+  background: -webkit-linear-gradient(#00ffea, #00ff80);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 0.5rem #53ffa9aa);
+}
+
+.NameInputContainer {
+  height: 6rem;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.NameInput {
+  font-size: 4rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  overflow-x: visible;
+  height: 6rem;
+  width: 55%;
+
+  background: -webkit-linear-gradient(#00ffea, #6865ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 0.5rem #00ffea55);
+}
+
+.NameCheck {
+  height: 5rem;
+  width: 8rem;
+  font-size: 2.5rem;
+  position: absolute;
+  right: 5rem;
+  outline: none;
+  border: #00ffea 0.2rem solid;
+  background-color: #00000000;
+  border-radius: 5rem;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.PlaceholderName {
+  background: -webkit-linear-gradient(#00ffea55, #6865ff55)  !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 0.5rem #00ffea55) !important;
+}
+
+.Keyboard {
+  margin-bottom: 3rem;
+  background: -webkit-linear-gradient(#00eeff, #00ff80);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.FirstRow, .SecondRow, .LastRow{
+
+}
+
+.FirstRow button, .SecondRow button, .LastRow button{
+  font-family: 'Roboto';
+  font-size: 2rem;
+  padding: 1rem;
+  margin-inline: 0.5rem;
+  margin-bottom: 1rem;
+  border-radius: 1rem;
+  border: none;
+  width: 4rem;
+  height: 4.5rem;
+  background-color: #00000000;
+  border: 3px solid #00ffea;
+}
+
+.Backspace {
+}
