@@ -162,30 +162,30 @@ function App() {
       const completion = await openai.createChatCompletion({
         model: "gpt-3.5-turbo",
         messages: [
-          {role: "system", content: `You are a punctuation and grammar fixer. You will receive a transcription from a user and your goal is to fix that input into a better readable format (math based). Only respond with a JSON object. If you have any comments, add a key to the object and respond there. //{"output":"<<text>>", "comment":"<<comment>>"} If the user is being offensive. Censor the offensive words with [CENSORED] instead. If you don't understand the transcription. Just fix it anyways. You do not need to respond. Do not add anything to the transcription. `},
+          {role: "system", content: `You are a punctuation and grammar fixer. You will receive a transcription from a user and your goal is to fix that input (because mic could pick up something wrong) into a better readable format (math based). Only respond with a JSON object. If you have any comments, add a key to the object and respond there. //{"output":"<<text>>", "comment":"<<comment>>"} If the user is being offensive (saying rated 18+ words). Censor the offensive words with [CENSORED] instead. If you don't understand the transcription. Just fix it anyways. You do not need to respond. Do not add anything to the transcription. `},
           {role: "user", content: `hello zelda`},
-          {role: "assistant", content: `{"output":"Hello, Zelda!"}`},
+          {role: "assistant", content: `{"transcribed":"Hello, Zelda!", "botreply":"Hello Human!"}`},
           {role: "user", content: `how are you`},
-          {role: "assistant", content: `{"output":"How are you?"}`},
+          {role: "assistant", content: `{"transcribed":"How are you?", "botreply":"I'm doing well. How are you?"}`},
           {role: "user", content: `who made you`},
-          {role: "assistant", content: `{"output":"Who made you?"}`},
+          {role: "assistant", content: `{"transcribed":"Who made you?", "botreply":"I was created by a team of developers."}`},
           {role: "user", content: `who created you`},
-          {role: "assistant", content: `{"output":"Who created you?"}`},
+          {role: "assistant", content: `{"transcribed":"Who created you?", "botreply":"I was created by a team of developers."}`},
           {role: "user", content: `can you convert all the previous dialog`},
-          {role: "assistant", content: `{"output":"Can you convert all the previous dialogs?"}`},
+          {role: "assistant", content: `{"transcribed":"Can you convert all the previous dialogs?"}`},
           {role: "user", content: `whats one plus one to the fifth power`},
-          {role: "assistant", content: `{"output":"What's (1 + 1)^5?"}`},
+          {role: "assistant", content: `{"transcribed":"What's (1 + 1)^5?"}`},
           {role: "user", content: `one plus one`},
-          {role: "assistant", content: `{"output":"1 + 1"`},
+          {role: "assistant", content: `{"transcribed":"1 + 1"`},
           {role: "user", content: `argue he returned`},
-          {role: "assistant", content: `{"output":"Argue. He returned.", "comment":"I'm sorry, I don't understand what you mean by that"}`},
+          {role: "assistant", content: `{"transcribed":"Argue. He returned.", "comment":"I'm sorry, I don't understand what you mean by that"}`},
           {role: "user", content: `in the accomodating`},
-          {role: "assistant", content: `{"output":"In the accomodating.", "comment":"I'm sorry, I don't understand what you mean by that"}`},
+          {role: "assistant", content: `{"transcribed":"In the accomodating.", "comment":"I'm sorry, I don't understand what you mean by that"}`},
           {role: "user", content: text},
         ],
       });
       const response = JSON.parse(completion.data.choices[0].message.content);
-      return response.output;
+      return response.transcribed;
     } catch (error)
     {
       console.log(error);
