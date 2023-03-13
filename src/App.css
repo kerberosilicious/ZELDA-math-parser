@@ -24,7 +24,7 @@
   flex-direction: row;
   
   width: 1024px;
-  height: 600px;
+  height: 768px;
   overflow: hidden;
   margin: 0 auto; /* centers the container horizontally */
 
@@ -35,9 +35,12 @@
   top: 0;
   left: 0;
   background-image: url('./src/assets/img/zelda-bg2.gif');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
   opacity: 0.5;
   width: 1024px;
-  height: 600px;
+  height: 768px;
   overflow: hidden;
   margin: 0 auto; /* centers the container horizontally */
   z-index: -1;
