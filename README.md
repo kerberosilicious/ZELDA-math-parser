@@ -21,8 +21,8 @@ To install and run Zelda, you will need:
 
 To install Zelda, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/gisketch/thesis-final-zelda`
-2. Navigate to the project directory: `cd thesis-final-zelda`
+1. Clone the repository: `git clone https://github.com/gisketch/ZELDA-math-parser`
+2. Navigate to the project directory: `cd ZELDA-math-parser`
 3. Install the dependencies: `npm install`
 4. Set up your OpenAI API key as an environment variable: `export OPENAI_API_KEY=your_key_here`
 5. Start the application: `npm run dev`
