@@ -13,4 +13,7 @@ export default defineConfig({
     }),
     viteCommonjs(),
   ],
+  build: { 
+    chunkSizeWarningLimit: 1600, 
+  },
 })

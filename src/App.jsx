@@ -27,8 +27,10 @@ import corePrompt from './CorePrompt';
 
 // ? OpenAI configurations * //
 
-require('dotenv').config();
-const { Configuration, OpenAIApi } = require("openai");
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { Configuration, OpenAIApi } from "openai";
 const configuration = new Configuration({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
 });
@@ -237,11 +239,11 @@ function App() {
         resetTranscript();
       } else
       {
-        addToConversation("User", transcript);
-        getZeldaResponse(transcript);
-        // const fixedMessage = await fixPunctuation(message);
-        // addToConversation("User", fixedMessage);
-        // getZeldaResponse(fixedMessage);
+        // addToConversation("User", transcript);
+        // getZeldaResponse(transcript);
+        const fixedMessage = await fixPunctuation(message);
+        addToConversation("User", fixedMessage);
+        getZeldaResponse(fixedMessage);
         setGeneratingResponse(true);
         resetTranscript();
       }

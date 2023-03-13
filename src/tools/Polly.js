@@ -1,5 +1,5 @@
-// Load the SDK
-const AWS = require('aws-sdk')
+import AWS from 'aws-sdk';
+
 
 // Create an Polly client
 const PollyClient = new AWS.Polly({
