@@ -494,17 +494,7 @@ function App() {
             >
             <motion.img
               className="ZeldaImage"
-              src={(() => {
-                switch(zeldaState) {
-                  case 0: return Math.random() < 0.5 ? "./src/assets/img/idle_loop.gif" : "./src/assets/img/idle_loop2.gif";
-                  case 1: return "./src/assets/img/thinking_loop.gif";
-  
-                  break;
-                  case 2: return "./src/assets/img/talking_loop.gif";
-                  case 3: return "./src/assets/img/listen_loop.gif";
-                  default: return "./src/assets/img/idle_loop.gif";
-                }
-                })()}
+             
               initial={{ scale: 0 }}
               animate={{ scale: 1}}
               />
